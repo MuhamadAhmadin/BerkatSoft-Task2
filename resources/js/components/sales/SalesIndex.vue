@@ -49,7 +49,7 @@
             <td
               class="px-6 py-4 text-sm leading-5 text-gray-900 whitespace-no-wrap"
             >
-              {{ item.customer.name }}
+              {{ item.customer?.name }}
             </td>
             <td
               class="px-6 py-4 text-sm leading-5 text-gray-900 whitespace-no-wrap"
@@ -64,7 +64,7 @@
             <td
               class="px-6 py-4 text-sm leading-5 text-gray-900 whitespace-no-wrap"
             >
-              Rp {{ (item.grand_total).toLocaleString() }}
+              {{ item.formatted_grand_total }}
             </td>
             <td
               class="px-6 py-4 text-sm leading-5 text-gray-900 whitespace-no-wrap"

@@ -25,8 +25,14 @@ class Sale extends Model
         return Carbon::parse($this->created_at)->locale('id_ID')->isoFormat('D MMMM Y');
     }
 
+    public function getFormattedGrandTotalAttribute()
+    {
+        return 'Rp ' . number_format($this->grand_total, 0, ',', '.');;
+    }
+
     protected $appends = [
         'formatted_created_at',
+        'formatted_grand_total',
     ];
 
     protected $guarded = ['id'];

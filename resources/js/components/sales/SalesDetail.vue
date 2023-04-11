@@ -23,7 +23,7 @@
         <label for="invoice_no" class="block text-sm font-medium text-gray-700"
           >Customer</label
         >
-        <p class="font-bold">{{ sale.customer.name }}</p>
+        <p class="font-bold">{{ sale.customer?.name }}</p>
       </div>
       <div>
         <label for="invoice_no" class="block text-sm font-medium text-gray-700"
@@ -74,17 +74,17 @@
               <td
                 class="px-6 py-4 text-sm leading-5 text-gray-900 whitespace-no-wrap"
               >
-                {{ item.product.name }}
+                {{ item.product?.name }}
               </td>
               <td
                 class="px-6 py-4 text-sm leading-5 text-gray-900 whitespace-no-wrap"
               >
-                {{ item.product.desc }}
+                {{ item.product?.desc }}
               </td>
               <td
                 class="px-6 py-4 text-sm leading-5 text-gray-900 whitespace-no-wrap"
               >
-                Rp {{ (item.product.price).toLocaleString() }}
+                {{ item.product?.formatted_price }}
               </td>
               <td
                 class="px-6 py-4 text-sm leading-5 text-gray-900 whitespace-no-wrap"
@@ -94,7 +94,7 @@
               <td
                 class="px-6 py-4 text-sm leading-5 text-gray-900 whitespace-no-wrap"
               >
-                Rp {{ (item.qty * item.product.price).toLocaleString() }}
+                {{ item.qty * item.product?.price }}
               </td>
             </tr>
           </template>
