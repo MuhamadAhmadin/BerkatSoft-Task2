@@ -21,7 +21,7 @@ export default function useSales() {
     const storeSale = async (data) => {
         errors_sale.value = ''
         try {
-            await axios.post('/api/sales/', data)
+            await axios.post('/api/sales', data)
             await router.push({ name: 'sales.index' })
         } catch (e) {
             console.log(e);

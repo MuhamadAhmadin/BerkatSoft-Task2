@@ -21,7 +21,7 @@ export default function useCustomers() {
     const storeCustomer = async (data) => {
         errors.value = ''
         try {
-            await axios.post('/api/customers/', data)
+            await axios.post('/api/customers', data)
             await router.push({name: 'customers.index'})
         } catch (e) {
             if (e.response.status === 422) {
@@ -30,7 +30,7 @@ export default function useCustomers() {
         }
     }
 
-        const updateCustomer = async (id) => {
+    const updateCustomer = async (id) => {
         errors.value = ''
         try {
             await axios.put('/api/customers/' + id, customer.value)

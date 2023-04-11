@@ -17,7 +17,7 @@ export default function useCarts() {
     const storeCart = async (data) => {
         errors.value = ''
         try {
-            await axios.post('/api/carts/', data)
+            await axios.post('/api/carts', data)
             await router.push({name: 'sales.create'})
         } catch (e) {
             if (e.response.status === 422) {

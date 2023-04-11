@@ -21,7 +21,7 @@ export default function useProducts() {
     const storeProduct = async (data) => {
         errors.value = ''
         try {
-            await axios.post('/api/products/', data)
+            await axios.post('/api/products', data)
             await router.push({name: 'products.index'})
         } catch (e) {
             if (e.response.status === 422) {
