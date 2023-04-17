@@ -71,7 +71,18 @@
                 type="submit"
                 class="inline px-4 py-2 text-xs font-semibold tracking-widest text-white uppercase bg-gray-800 rounded-md border border-transparent ring-gray-300 transition duration-150 ease-in-out hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring disabled:opacity-25"
               >
-                Add to Cart
+                <span v-if="form_cart.edit_state == true">Update cart</span>
+                <span v-else>Add to cart</span>
+              </button>
+            </div>
+
+            <div v-if="form_cart.edit_state == true">
+              <button
+                type="button"
+                @click="cancelEdit"
+                class="inline px-4 py-2 text-xs font-semibold tracking-widest text-white uppercase bg-red-800 rounded-md border border-transparent ring-red-300 transition duration-150 ease-in-out hover:bg-red-700 active:bg-red-900 focus:outline-none focus:border-red-900 focus:ring disabled:opacity-25"
+              >
+                Cancel edit
               </button>
             </div>
           </div>
@@ -142,22 +153,22 @@
         </thead>
 
         <tbody class="bg-white divide-y divide-gray-200 divide-solid">
-          <template v-for="item in carts" :key="item.id">
+          <template v-for="item, index in carts" :key="item.id">
             <tr class="bg-white">
               <td
                 class="px-6 py-4 text-sm leading-5 text-gray-900 whitespace-no-wrap"
               >
-                {{ item.product.name }}
+                {{ item.name }}
               </td>
               <td
                 class="px-6 py-4 text-sm leading-5 text-gray-900 whitespace-no-wrap"
               >
-                {{ item.product.desc }}
+                {{ item.desc }}
               </td>
               <td
                 class="px-6 py-4 text-sm leading-5 text-gray-900 whitespace-no-wrap"
               >
-                Rp {{ (item.product.price).toLocaleString() }}
+                Rp {{ (item.price).toLocaleString() }}
               </td>
               <td
                 class="px-6 py-4 text-sm leading-5 text-gray-900 whitespace-no-wrap"
@@ -167,14 +178,21 @@
               <td
                 class="px-6 py-4 text-sm leading-5 text-gray-900 whitespace-no-wrap"
               >
-                Rp {{ (item.qty * item.product.price).toLocaleString() }}
+                Rp {{ (item.qty * item.price).toLocaleString() }}
               </td>
               <td
                 class="px-6 py-4 text-sm leading-5 text-gray-900 whitespace-no-wrap"
               >
                 <button
                   type="button"
-                  @click="deleteCart(item.id)"
+                  @click="editCart(index)"
+                  class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150"
+                >
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  @click="deleteCart(index)"
                   class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150"
                 >
                   Delete
@@ -206,15 +224,18 @@ import { onMounted } from "vue";
 const form_cart = reactive({
   product_id: "",
   qty: "",
+  edit_state: false,
 });
 
 const form_sale = reactive({
   customer_id: "",
+  cartData: []
 });
+
 const { products, getProducts } = useProducts();
 const { customers, getCustomers } = useCustomers();
 const { errors_sale, storeSale } = useSales();
-const { errors, carts, getCarts, storeCart, destroyCart } = useCarts();
+const { errors, carts, getCarts, storeCart, getCartData, destroyCart, confirmUpdate } = useCarts();
 
 onMounted(getProducts);
 onMounted(getCarts);
@@ -229,11 +250,32 @@ const deleteCart = async (id) => {
   await getCarts();
 };
 
+const editCart = async (id) => {
+  let cartData = await getCartData(id);
+  form_cart.qty = cartData.qty;
+  form_cart.product_id = cartData.id;
+  form_cart.edit_state = true;
+}
+
 const saveSale = async () => {
+  form_sale.cartData = carts.value;
   await storeSale({ ...form_sale });
 };
 const saveCart = async () => {
-  await storeCart({ ...form_cart });
-  await getCarts();
+  form_cart.edit_state
+    ? await confirmEdit()
+    : await storeCart(form_cart.qty, products.value.filter((item) => item.id == form_cart.product_id)[0]);
 };
+
+const confirmEdit = async () => {
+  await confirmUpdate(form_cart.qty, products.value.filter((item) => item.id == form_cart.product_id)[0]);
+  cancelEdit();
+}
+
+const cancelEdit = async () => {
+  form_cart.qty = "";
+  form_cart.product_id = "";
+  form_cart.edit_state = false;
+}
+
 </script>

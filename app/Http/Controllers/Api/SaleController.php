@@ -30,9 +30,23 @@ class SaleController extends Controller
             'customer_id' => 'required',
         ]);
 
+        // DB Version
         // Check if cart is empty
-        if (Cart::count() == 0) {
+        // if (Cart::count() == 0) {
+        //     return response()->json([
+        //         'errors' => [
+        //             'cart' => ['Cart is empty']
+        //         ],
+        //         'message' => 'Cart is empty'
+        //     ], 422);
+        // }
+
+        // Array Version
+        if (count($request->cartData) == 0) {
             return response()->json([
+                'errors' => [
+                    'cart' => ['Cart is empty']
+                ],
                 'message' => 'Cart is empty'
             ], 422);
         }
@@ -44,22 +58,22 @@ class SaleController extends Controller
         $sale->save();
         $grand_total = 0;
 
-        $carts = Cart::all();
-        foreach ($carts as $cart) {
+        // $carts = Cart::all();
+        foreach ($request->cartData as $cart) {
             $sale_detail = new SaleDetail();
-            $sale_detail->product_id = $cart->product_id;
+            $sale_detail->product_id = $cart['id'];
             $sale_detail->sale_id = $sale->id;
-            $sale_detail->qty = $cart->qty;
-            $grand_total += $cart->product->price * $cart->qty;
+            $sale_detail->qty = $cart['qty'];
+            $grand_total += $cart['price'] * $cart['qty'];
             $sale_detail->save();
         }
         $sale->grand_total = $grand_total;
         $sale->save();
 
-        $carts = Cart::all();
-        foreach($carts as $cart) {
-            $cart->delete();
-        }
+        // $carts = Cart::all();
+        // foreach($carts as $cart) {
+        //     $cart->delete();
+        // }
 
         return new SaleResource($sale);
     }
